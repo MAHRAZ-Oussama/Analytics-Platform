@@ -1,0 +1,56 @@
+/* Dynamic progress bars for ratings and metrics */
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.progress-bar-track {
+  width: 4rem;
+  height: 0.375rem;
+  background-color: #f3f4f6;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 0.375rem;
+  border-radius: 9999px;
+  transition: width 0.3s ease-in-out;
+}
+
+/* Primary color (purple) progress bar */
+.progress-bar-fill.primary {
+  background-color: #4B3F99;
+}
+
+/* Churn score indicators */
+.progress-bar-fill.churn-high {
+  background-color: #ef4444; /* red-500 */
+}
+
+.progress-bar-fill.churn-medium {
+  background-color: #fbbf24; /* amber-400 */
+}
+
+.progress-bar-fill.churn-low {
+  background-color: #10b981; /* emerald-400 */
+}
+
+/* Rating bar wrapper */
+.rating-bar-wrapper {
+  display: flex;
+  flex: 1;
+  height: 0.375rem;
+  background-color: #f3f4f6;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.rating-bar-fill {
+  height: 0.375rem;
+  border-radius: 9999px;
+  background-color: #4B3F99;
+  transition: width 0.3s ease-in-out;
+}
