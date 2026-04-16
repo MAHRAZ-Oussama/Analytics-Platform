@@ -1,3 +1,5 @@
+import { EPSI_FORMATIONS } from "./constants";
+
 export interface Promotion {
   promotion_id: string;
   name: string;
@@ -5,8 +7,10 @@ export interface Promotion {
   students_count: number;
   success_rate: number;
   dropout_rate: number;
-  course_type: "Alternance" | "Stage" | "Initial";
-  level: string;
+  course_type: "Alternance" | "Initial";
+  level: "BTS" | "Bac+3" | "Bac+5";
+  formation_id: string; // Reference to EPSI_FORMATIONS
+  domain: string;
 }
 
 export interface HistoricalData {
@@ -17,40 +21,79 @@ export interface HistoricalData {
   dropout_rate: number;
 }
 
+// Génération dynamique des promotions à partir des formations réelles
+function generatePromotionsFromFormations(year: number): Promotion[] {
+  // Filter only formations that have valid promotion levels (BTS, Bac+3, Bac+5)
+  const formations = EPSI_FORMATIONS.filter((f) => {
+    return f.level === "BTS" || f.level === "Bac+3" || f.level === "Bac+5";
+  });
+  const promos: Promotion[] = [];
+  let idCounter = 1;
+
+  formations.forEach((formation) => {
+    // Générer des stats réalistes par année
+    const baseStudents: Record<string, number> = {
+      F001: 85, // BTS SIO
+      F009: 45, // Bac+3 IA
+      F010: 52, // Bac+3 Full Stack
+      F011: 38, // Bac+3 Admin
+      F013: 42, // Bac+5 Cyber
+      F014: 35, // Bac+5 IA
+      F015: 48, // Bac+5 DevOps
+      F016: 28, // Bac+5 Manager
+      F017: 41, // Bac+5 Cloud
+    };
+
+    const students = baseStudents[formation.id] || 30;
+    const yearOffset = 2024 - year;
+    const students_count = Math.max(Math.round(students * (1 - yearOffset * 0.05)), 20);
+
+    promos.push({
+      promotion_id: `P${String(idCounter++).padStart(3, "0")}`,
+      name: `${formation.name} ${year}`,
+      year,
+      students_count,
+      success_rate: Math.round((80 + Math.random() * 20) * 10) / 10,
+      dropout_rate: Math.round((3 + Math.random() * 5) * 10) / 10,
+      course_type: formation.alternance_available ? "Alternance" : "Initial",
+      level: formation.level as "BTS" | "Bac+3" | "Bac+5",
+      formation_id: formation.id,
+      domain: formation.domain,
+    });
+  });
+
+  return promos;
+}
+
 export const promotions: Promotion[] = [
-  { promotion_id: "P001", name: "BTS SIO SLAM 2024", year: 2024, students_count: 32, success_rate: 84.4, dropout_rate: 6.2, course_type: "Alternance", level: "BTS" },
-  { promotion_id: "P002", name: "BTS SIO SISR 2024", year: 2024, students_count: 28, success_rate: 78.6, dropout_rate: 7.1, course_type: "Initial", level: "BTS" },
-  { promotion_id: "P003", name: "Bachelor Cyber 2024", year: 2024, students_count: 24, success_rate: 91.7, dropout_rate: 4.2, course_type: "Alternance", level: "Bachelor" },
-  { promotion_id: "P004", name: "Bachelor DevOps 2024", year: 2024, students_count: 22, success_rate: 86.4, dropout_rate: 4.5, course_type: "Stage", level: "Bachelor" },
-  { promotion_id: "P005", name: "MSc IA 2024", year: 2024, students_count: 18, success_rate: 94.4, dropout_rate: 5.6, course_type: "Alternance", level: "MSc" },
-  { promotion_id: "P006", name: "MSc Data Science 2024", year: 2024, students_count: 20, success_rate: 90.0, dropout_rate: 5.0, course_type: "Alternance", level: "MSc" },
-  { promotion_id: "P007", name: "BTS SIO SLAM 2023", year: 2023, students_count: 30, success_rate: 80.0, dropout_rate: 6.7, course_type: "Alternance", level: "BTS" },
-  { promotion_id: "P008", name: "BTS SIO SISR 2023", year: 2023, students_count: 26, success_rate: 73.1, dropout_rate: 7.7, course_type: "Initial", level: "BTS" },
-  { promotion_id: "P009", name: "Bachelor Cyber 2023", year: 2023, students_count: 22, success_rate: 86.4, dropout_rate: 4.5, course_type: "Alternance", level: "Bachelor" },
-  { promotion_id: "P010", name: "Bachelor DevOps 2023", year: 2023, students_count: 20, success_rate: 80.0, dropout_rate: 5.0, course_type: "Stage", level: "Bachelor" },
-  { promotion_id: "P011", name: "MSc IA 2023", year: 2023, students_count: 16, success_rate: 87.5, dropout_rate: 6.2, course_type: "Alternance", level: "MSc" },
-  { promotion_id: "P012", name: "MSc Data Science 2023", year: 2023, students_count: 18, success_rate: 88.9, dropout_rate: 5.6, course_type: "Alternance", level: "MSc" },
+  ...generatePromotionsFromFormations(2024),
+  ...generatePromotionsFromFormations(2023),
+  ...generatePromotionsFromFormations(2022),
 ];
 
 export const historicalData: HistoricalData[] = [
-  { promotion_id: "P001", year: 2021, students_count: 25, success_rate: 76.0, dropout_rate: 8.0 },
-  { promotion_id: "P001", year: 2022, students_count: 28, success_rate: 78.6, dropout_rate: 7.1 },
-  { promotion_id: "P001", year: 2023, students_count: 30, success_rate: 80.0, dropout_rate: 6.7 },
-  { promotion_id: "P001", year: 2024, students_count: 32, success_rate: 84.4, dropout_rate: 6.2 },
+  // BTS SIO
+  { promotion_id: "P001", year: 2021, students_count: 72, success_rate: 76.0, dropout_rate: 8.0 },
+  { promotion_id: "P001", year: 2022, students_count: 78, success_rate: 78.6, dropout_rate: 7.1 },
+  { promotion_id: "P001", year: 2023, students_count: 82, success_rate: 80.0, dropout_rate: 6.7 },
+  { promotion_id: "P001", year: 2024, students_count: 85, success_rate: 82.4, dropout_rate: 5.8 },
 ];
 
+// Total par année académique (tous les cours confondus)
 export const yearlyEffectifs = [
-  { year: "2021", total: 148, alternance: 72, stage: 34, initial: 42 },
-  { year: "2022", total: 162, alternance: 81, stage: 37, initial: 44 },
-  { year: "2023", total: 182, alternance: 96, stage: 40, initial: 46 },
-  { year: "2024", total: 204, alternance: 112, stage: 46, initial: 46 },
+  { year: "2022", total: 340, alternance: 185, initial: 155 },
+  { year: "2023", total: 385, alternance: 215, initial: 170 },
+  { year: "2024", total: 414, alternance: 242, initial: 172 },
 ];
 
+// Taux de réussite par formation
 export const successRateByPromotion = [
-  { name: "BTS SLAM", taux: 84.4 },
-  { name: "BTS SISR", taux: 78.6 },
-  { name: "Bach. Cyber", taux: 91.7 },
-  { name: "Bach. DevOps", taux: 86.4 },
-  { name: "MSc IA", taux: 94.4 },
-  { name: "MSc Data", taux: 90.0 },
+  { name: "BTS SIO", taux: 82.4 },
+  { name: "Bac+3 IA", taux: 87.2 },
+  { name: "Bac+3 Full Stack", taux: 85.6 },
+  { name: "Bac+3 Admin", taux: 83.1 },
+  { name: "Bac+5 Cyber", taux: 91.7 },
+  { name: "Bac+5 IA", taux: 89.3 },
+  { name: "Bac+5 DevOps", taux: 88.9 },
+  { name: "Bac+5 Cloud", taux: 90.4 },
 ];

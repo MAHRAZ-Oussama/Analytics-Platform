@@ -55,7 +55,7 @@ export default function DashboardPage() {
             </button>
           ))}
           <div className="w-px h-5 bg-gray-200" />
-          {["Tous", "Alternance", "Stage", "Initial"].map((t) => (
+          {["Tous", "Alternance", "Initial"].map((t) => (
             <button
               key={t}
               onClick={() => setCourseFilter(t)}
@@ -74,30 +74,39 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <KPICard
             title="Effectif Total"
-            value={204}
+            value={414}
             unit="étudiants"
-            trend={12}
+            trend={7.5}
             trendLabel="vs 2023"
             icon={Users}
             color="primary"
           />
           <KPICard
             title="Taux de Réussite Moyen"
-            value="87.6"
+            value="87.1"
             unit="%"
-            trend={4}
+            trend={2.8}
             trendLabel="vs 2023"
             icon={TrendingUp}
             color="success"
           />
           <KPICard
-            title="Taux d'Absentéisme"
-            value="8.3"
-            unit="%"
-            trend={-1.2}
-            trendLabel="vs 2023"
-            icon={CalendarX}
+            title="Nombre de Campus"
+            value={13}
+            unit="lieux"
+            trend={0}
+            trendLabel="depuis 1961"
+            icon={Users}
             color="accent"
+          />
+          <KPICard
+            title="Formations"
+            value={18}
+            unit="programmes"
+            trend={8}
+            trendLabel="depuis 2022"
+            icon={TrendingUp}
+            color="primary"
           />
           <KPICard
             title="Risque Décrochage"
